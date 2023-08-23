@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { RemoveRedEye } from "@mui/icons-material";
 
@@ -17,7 +17,7 @@ const AddRecipe = () => {
  const [steps, setSteps] = useState([]);
 
  const handleSubmit = (e) => {
-//   e.preventDefault();
+  //   e.preventDefault();
   const formData = {
    name: name,
    cuisine_id: +cuisine,
@@ -27,6 +27,7 @@ const AddRecipe = () => {
    description: description,
    ingredients: ingredients,
    instructions: steps,
+   user_id: localStorage.getItem("user_id"),
   };
   console.log(formData);
   axios

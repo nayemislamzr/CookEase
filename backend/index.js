@@ -249,6 +249,15 @@ const addImage = (image, recipeId) => {
  });
 };
 
+const addUserRecipe = (userId, recipeId) => {
+ const q = "insert into CookEase.user_recipe (user_id,recipe_id) values (?,?)";
+ db.query(q, [userId, recipeId], (err, result) => {
+  if (err) console.error(err);
+  else {
+  }
+ });
+};
+
 //add recipe
 app.post("/add_recipe", (req, res) => {
  const q =
@@ -265,6 +274,7 @@ app.post("/add_recipe", (req, res) => {
   addImage(req.body.image, recipeId);
   addIngredients(req.body.ingredients, recipeId);
   addInstructionSteps(req.body.instructions, recipeId);
+  addUserRecipe(req.body.user_id, recipeId);
   return res.json(`successfuly added the recipe with id ${recipeId}`);
  });
 });
@@ -280,6 +290,20 @@ app.get("/get_cuisines", (req, res) => {
   } else {
    // Send the retrieved cuisines as a JSON response
    res.status(200).json(results);
+  }
+ });
+});
+
+// reaction on recipe
+app.post("/post_reaction", (req, res) => {
+ const q =
+  "insert into CookEase.recipe_reaction(type,user_id,recipe_id) values ('like',?,?)";
+ db.query(q, [req.body.user_id, req.body.recipe_id], (err, data) => {
+  if (err) {
+   console.error(err);
+   res.status(500).json(err);
+  } else {
+   res.status(200).json("reaction added");
   }
  });
 });
