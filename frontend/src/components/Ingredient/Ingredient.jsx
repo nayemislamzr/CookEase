@@ -8,7 +8,10 @@ const Ingredient = ({ ingredients }) => {
    <p className="text-xl mb-4 font-abril-fatface border-b-2">Ingredients</p>
    <ul className="flex flex-col space-y-1">
     {ingredients.map((ingredient) => (
-     <IngredientText ingredient={ingredient.ingredient_name} />
+     <IngredientText
+      key={ingredient.ingredient_name}
+      ingredient={ingredient.ingredient_name}
+     />
     ))}
    </ul>
   </div>

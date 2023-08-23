@@ -19,6 +19,19 @@ app.listen(port, () => {
  console.log(`CookEase is alive at http://localhost:${port}`);
 });
 
+// Define a function to query the database using Promises
+function queryDatabase(query, values) {
+ return new Promise((resolve, reject) => {
+  db.query(query, values, (err, data) => {
+   if (err) {
+    reject(err);
+   } else {
+    resolve(data);
+   }
+  });
+ });
+}
+
 // get user by id
 app.get("/users/:id", (req, res) => {
  const userId = req.params.id;
@@ -275,7 +288,7 @@ app.post("/add_recipe", (req, res) => {
   addIngredients(req.body.ingredients, recipeId);
   addInstructionSteps(req.body.instructions, recipeId);
   addUserRecipe(req.body.user_id, recipeId);
-  return res.json(`successfuly added the recipe with id ${recipeId}`);
+  return res.json({ recipe_id: data.insertId });
  });
 });
 
@@ -294,8 +307,35 @@ app.get("/get_cuisines", (req, res) => {
  });
 });
 
+// get post stat of the user
+app.post("/post_stat", async (req, res) => {
+ const { user_id, recipe_id } = req.body;
+ console.log(user_id, recipe_id);
+
+ const q1 =
+  "SELECT COUNT(*) AS liked FROM CookEase.recipe_reaction WHERE user_id = ? AND recipe_id = ?";
+ const q2 =
+  "SELECT COUNT(*) AS saved FROM CookEase.saved_recipe WHERE user_id = ? AND recipe_id = ?";
+
+ try {
+  const likedData = await queryDatabase(q1, [user_id, recipe_id]);
+  const savedData = await queryDatabase(q2, [user_id, recipe_id]);
+
+  const formData = {
+   liked: likedData[0].liked !== 0,
+   saved: savedData[0].saved !== 0,
+  };
+
+  console.log(formData);
+  return res.json(formData);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
 // reaction on recipe
-app.post("/post_reaction", (req, res) => {
+app.post("/add_post_reaction", (req, res) => {
  const q =
   "insert into CookEase.recipe_reaction(type,user_id,recipe_id) values ('like',?,?)";
  db.query(q, [req.body.user_id, req.body.recipe_id], (err, data) => {
@@ -308,6 +348,19 @@ app.post("/post_reaction", (req, res) => {
  });
 });
 
+app.post("/rmv_post_reaction", (req, res) => {
+ const q =
+  "delete from CookEase.recipe_reaction where user_id = ? and recipe_id = ?";
+ db.query(q, [req.body.user_id, req.body.recipe_id], (err, data) => {
+  if (err) {
+   console.error(err);
+   res.status(500).json(err);
+  } else {
+   res.status(200).json("reaction removed");
+  }
+ });
+});
+
 // get user from recipe_id
 app.get("/user_by_recipe/:id", (req, res) => {
  const recipeId = req.params.id;
@@ -316,6 +369,16 @@ app.get("/user_by_recipe/:id", (req, res) => {
  db.query(q, [recipeId], (err, data) => {
   if (err) return res.json(err);
   return res.json(data[0]);
+ });
+});
+
+app.post("/add_comment", (req, res) => {
+ const { recipe_id, user_id, comment_text } = req.body;
+ const q =
+  "insert into CookEase.recipe_comment(recipe_id,user_id,comment_text) values (?,?,?)";
+ db.query(q, [recipe_id, user_id, comment_text], (err, data) => {
+  if (err) return res.json(err);
+  return res.json("comment added");
  });
 });
 

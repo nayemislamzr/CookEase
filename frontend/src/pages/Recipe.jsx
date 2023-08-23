@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
  BookmarkBorder,
+ Bookmark,
  FavoriteBorder,
+ Favorite,
  ChatBubbleOutline,
  CameraAltOutlined,
  Print,
@@ -25,6 +27,8 @@ const Recipe = (props) => {
  const [comments, setComments] = useState([]);
  const [ingredients, setIngredients] = useState([]);
  const [steps, setSteps] = useState([]);
+ const [liked, setLiked] = useState(false);
+ const [saved, setSaved] = useState(false);
 
  useEffect(() => {
   const fetchRecipe = async () => {
@@ -77,21 +81,63 @@ const Recipe = (props) => {
    }
   };
 
+  const fetchPostStatUser = async () => {
+   try {
+    const apiUrl = `http://localhost:8100/post_stat`;
+    const formData = {
+     user_id: localStorage.getItem("user_id"),
+     recipe_id: id,
+    };
+    const res = await axios.post(apiUrl, formData);
+    setLiked(res.data.liked);
+    setSaved(res.data.saved);
+   } catch (error) {
+    console.error("Error fetching recipe data:", error);
+   }
+  };
+
   (async () => {
    await fetchRecipe();
    await fetchUser();
    await fetchComments();
    await fetchSteps();
    await fetchIngredients();
+   await fetchPostStatUser();
   })();
  }, []);
+
+ const addReaction = async (e) => {
+  await axios.post("http://localhost:8100/add_post_reaction", {
+   user_id: localStorage.getItem("user_id"),
+   recipe_id: id,
+  });
+  setLiked(true);
+ };
+
+ const removeReaction = async (e) => {
+  await axios.post("http://localhost:8100/rmv_post_reaction", {
+   user_id: localStorage.getItem("user_id"),
+   recipe_id: id,
+  });
+  setLiked(false);
+ };
 
  return (
   <div>
    <Header />
    <div className="fixed bottom-1/2 right-12 flex flex-col items-center bg-white rounded-lg shadow-md ml-4 w-12 text-pink-600 space-y-5 p-2">
-    <BookmarkBorder />
-    <FavoriteBorder />
+    {saved && <Bookmark />}
+    {!saved && <BookmarkBorder />}
+    {!liked && (
+     <button onClick={addReaction}>
+      <FavoriteBorder />
+     </button>
+    )}
+    {liked && (
+     <button onClick={removeReaction}>
+      <Favorite />
+     </button>
+    )}
     <ChatBubbleOutline />
     <CameraAltOutlined />
     <Print />
@@ -115,7 +161,7 @@ const Recipe = (props) => {
     <div className="w-3/12 flex-col space-y-3">
      {user && <UserCard user={user} />}
      <CommentSection comments={comments} />
-     <CommentInput />
+     <CommentInput recipe_id={id} />
     </div>
    </div>
   </div>

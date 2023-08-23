@@ -1,21 +1,29 @@
+import axios from "axios";
 import React, { useState } from "react";
 
-const CommentInput = ({ onSubmit }) => {
+const CommentInput = ({ recipe_id }) => {
  const [comment, setComment] = useState("");
 
  const handleCommentChange = (event) => {
   setComment(event.target.value);
  };
 
- const handleSubmit = () => {
+ const handleSubmit = async (e) => {
   if (comment.trim() !== "") {
-   onSubmit(comment);
+   const formData = {
+    recipe_id: recipe_id,
+    user_id: localStorage.getItem("user_id"),
+    comment_text: comment,
+   };
+   await axios.post("http://localhost:8100/add_comment", formData);
    setComment("");
   }
  };
 
  return (
-  <form className="max-w-2xl bg-white rounded-lg border p-2 mx-auto mt-20 shadow-md">
+  <form
+   className="max-w-2xl bg-white rounded-lg border p-2 mx-auto mt-20 shadow-md"
+   onSubmit={handleSubmit}>
    <div className="px-3 mb-2 mt-2">
     <textarea
      placeholder="Write your opinion..."
@@ -27,7 +35,6 @@ const CommentInput = ({ onSubmit }) => {
      type="submit"
      className="px-2.5 py-1.5 rounded-md text-white text-bold text-sm bg-pink-600"
      value="Comment"
-     onSubmit={handleSubmit}
     />
    </div>
   </form>

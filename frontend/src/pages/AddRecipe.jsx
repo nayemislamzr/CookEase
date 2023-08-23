@@ -16,7 +16,7 @@ const AddRecipe = () => {
  const [ingredients, setIngredients] = useState([]);
  const [steps, setSteps] = useState([]);
 
- const handleSubmit = (e) => {
+ const handleSubmit = async (e) => {
   //   e.preventDefault();
   const formData = {
    name: name,
@@ -29,17 +29,7 @@ const AddRecipe = () => {
    instructions: steps,
    user_id: localStorage.getItem("user_id"),
   };
-  console.log(formData);
-  axios
-   .post("http://localhost:8100/add_recipe", formData)
-   .then(function (response) {
-    console.log("Success:", response.data);
-    // Handle success here
-   })
-   .catch(function (error) {
-    console.error("Error:", error);
-    // Handle error here
-   });
+  const res = await axios.post("http://localhost:8100/add_recipe", formData);
  };
 
  return (
