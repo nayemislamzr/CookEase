@@ -122,12 +122,36 @@ const Recipe = (props) => {
   setLiked(false);
  };
 
+ const addBookmark = async (e) => {
+  await axios.post("http://localhost:8100/save_post", {
+   user_id: localStorage.getItem("user_id"),
+   recipe_id: id,
+  });
+  setSaved(true);
+ };
+
+ const removeBookmark = async (e) => {
+  await axios.post("http://localhost:8100/remove_saved_post", {
+   user_id: localStorage.getItem("user_id"),
+   recipe_id: id,
+  });
+  setSaved(false);
+ };
+
  return (
   <div>
    <Header />
    <div className="fixed bottom-1/2 right-12 flex flex-col items-center bg-white rounded-lg shadow-md ml-4 w-12 text-pink-600 space-y-5 p-2">
-    {saved && <Bookmark />}
-    {!saved && <BookmarkBorder />}
+    {saved && (
+     <button onClick={removeBookmark}>
+      <Bookmark />
+     </button>
+    )}
+    {!saved && (
+     <button onClick={addBookmark}>
+      <BookmarkBorder />
+     </button>
+    )}
     {!liked && (
      <button onClick={addReaction}>
       <FavoriteBorder />

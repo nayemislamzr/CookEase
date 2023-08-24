@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import AddRecipe from "./pages/AddRecipe";
 import Recipe from "./pages/Recipe";
 import User from "./pages/User";
+import BookMarks from "./pages/BookMarks";
 
 function App() {
  return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Register />} />
       <Route path="/add_recipe" element={<AddRecipe />} />
+      <Route path="/bookmarks" element={<BookMarks />} />
       <Route path="/recipe/:id" element={<Recipe />} />
       <Route path="/user/:id" element={<User />} />
      </Routes>

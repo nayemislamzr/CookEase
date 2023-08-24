@@ -79,6 +79,31 @@ app.post("/login_user", (req, res) => {
  });
 });
 
+app.get("/featured_recipes", (req, res) => {
+ const limit = 5; // Number of recent recipes to fetch
+
+ // SQL query to select the 5 most recent recipes
+ const query = `
+    SELECT recipe_id, COUNT(*) as like_count
+    FROM CookEase.recipe_reaction
+    GROUP BY recipe_id
+    ORDER BY like_count DESC
+    LIMIT ?;
+    `;
+
+ // Execute the SQL query with the specified limit
+ db.query(query, [limit], (error, results) => {
+  if (error) {
+   console.error("Error fetching recent recipes:", error);
+   // Handle the error here, e.g., send an error response
+   res.status(500).json({ error: "Error fetching recent recipes" });
+  } else {
+   // Send the retrieved recent recipes as a JSON response
+   res.status(200).json(results);
+  }
+ });
+});
+
 // get recent recipes
 app.get("/recent_recipes", (req, res) => {
  const limit = 5; // Number of recent recipes to fetch
@@ -106,6 +131,20 @@ app.get("/recent_recipes", (req, res) => {
 
 // app.get("/featured_recipes", (req, res) => {
 // }
+
+// get bookmarked recipes
+app.post("/bookmarks", (req, res) => {
+ const { user_id } = req.body;
+ const q = "SELECT * FROM CookEase.saved_recipe where user_id = ?";
+ db.query(q, [user_id], (err, data) => {
+  if (err) {
+   console.error("Error fetching bookmarks:", err);
+   res.status(500).json({ error: "Error fetching bookmarks" });
+  } else {
+   res.status(200).json(data);
+  }
+ });
+});
 
 // get recipeInfo by id
 // name, intro, instruction, cookingTime, cuisine, imageurl, likecount, commentcount
@@ -310,7 +349,7 @@ app.get("/get_cuisines", (req, res) => {
 // get post stat of the user
 app.post("/post_stat", async (req, res) => {
  const { user_id, recipe_id } = req.body;
- console.log(user_id, recipe_id);
+ //  console.log(user_id, recipe_id);
 
  const q1 =
   "SELECT COUNT(*) AS liked FROM CookEase.recipe_reaction WHERE user_id = ? AND recipe_id = ?";
@@ -326,7 +365,7 @@ app.post("/post_stat", async (req, res) => {
    saved: savedData[0].saved !== 0,
   };
 
-  console.log(formData);
+  //   console.log(formData);
   return res.json(formData);
  } catch (err) {
   console.error("Error:", err);
@@ -357,6 +396,33 @@ app.post("/rmv_post_reaction", (req, res) => {
    res.status(500).json(err);
   } else {
    res.status(200).json("reaction removed");
+  }
+ });
+});
+
+// bookmark post
+app.post("/save_post", (req, res) => {
+ const q = "insert into CookEase.saved_recipe(user_id,recipe_id) values (?,?)";
+ db.query(q, [req.body.user_id, req.body.recipe_id], (err, data) => {
+  if (err) {
+   console.error(err);
+   res.status(500).json(err);
+  } else {
+   res.status(200).json("post bookmarked");
+  }
+ });
+});
+
+// remove from bookmarked post
+app.post("/remove_saved_post", (req, res) => {
+ const q =
+  "delete from CookEase.saved_recipe where user_id = ? and recipe_id = ?";
+ db.query(q, [req.body.user_id, req.body.recipe_id], (err, data) => {
+  if (err) {
+   console.error(err);
+   res.status(500).json(err);
+  } else {
+   res.status(200).json("post removed from bookmark");
   }
  });
 });

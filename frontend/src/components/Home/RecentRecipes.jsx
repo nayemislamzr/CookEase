@@ -21,7 +21,7 @@ const RecentRecipes = () => {
   const fetchData = async () => {
    const apiUrl = "http://localhost:8100/recent_recipes";
    const response = await axios.get(apiUrl);
-   console.log(response.data);
+//    console.log(response.data);
    response.data.map(async (recipe) => {
     const { recipe_id, post_time } = recipe;
     const response = await axios.get(
@@ -36,7 +36,7 @@ const RecentRecipes = () => {
      chefName: "Nayem",
      publishTime: post_time,
     };
-    console.log(new_recipe);
+    // console.log(new_recipe);
     setRecipes((recipes) => [...recipes, new_recipe]);
    });
   };

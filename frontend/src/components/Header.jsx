@@ -48,7 +48,11 @@ const Header = () => {
       <Link to="/contests">
        <EmojiEvents />
       </Link>
-      {loggedIn && <Bookmarks />}
+      {loggedIn && (
+       <Link to="/bookmarks">
+        <Bookmarks />
+       </Link>
+      )}
      </div>
      <div className="flex space-x-4">
       {loggedIn && (

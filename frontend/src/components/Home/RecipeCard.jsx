@@ -30,10 +30,14 @@ const RecipeCard = ({
      <div className="badge2 bg-gray-300 hover:bg-pink-600 active:bg-pink-600 text-white">
       <Favorite />
      </div>
-     <img src={image} alt={title} className="recipe-image" />
+     <img
+      src={image}
+      alt={title}
+      className="recipe-image transform hover:scale-105 transition-transform duration-300"
+     />
      <div className="card-details">
-      <h2 className="title">{title}</h2>
-      <p className="chef-name">by {chefName}</p>
+      <h2 className="title line-clamp-1">{title}</h2>
+      <p className="chef-name line-clamp-1">by {chefName}</p>
       <p className="publish-time">Published on {publishTime}</p>
      </div>
     </div>
