@@ -1,6 +1,8 @@
 import express from "express";
 import mysql from "mysql";
 import cors from "cors";
+import multer from "multer";
+import path from "path";
 
 const port = 8100;
 const app = express();
@@ -13,6 +15,17 @@ const db = mysql.createConnection({
  user: "root",
  password: "2019331092",
  database: "CookEase",
+});
+
+const storage = multer.diskStorage({
+ destination: "./uploads/",
+ filename: (req, file, cb) => {
+  cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+ },
+});
+
+const upload = multer({
+ storage: storage,
 });
 
 app.listen(port, () => {
@@ -636,4 +649,13 @@ app.get("/ingredients/:id", (req, res) => {
   if (err) return res.json(err);
   return res.json(data);
  });
+});
+
+// File upload
+app.post("/upload", upload.single("file"), (req, res) => {
+ if (!req.file) {
+  return res.status(400).send("No file uploaded.");
+ }
+ const filename = req.file.filename;
+ return res.json(filename);
 });

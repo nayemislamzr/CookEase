@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { RemoveRedEye } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 import Header from "../components/Header";
 import AddPostHead from "../components/Posts/AddPostHead";
@@ -9,27 +10,49 @@ import AddDescription from "../components/Posts/AddDescription";
 import AddInstruction from "../components/Instruction/AddIntruction";
 
 const AddRecipe = () => {
+ const navigate = useNavigate();
+
  const [name, setName] = useState("");
  const [cuisine, setCuisine] = useState(null);
  const [cookingTime, setCookingTime] = useState(null);
+ const [selectedFile, setSelectedFile] = useState(null);
  const [description, setDescription] = useState("");
  const [ingredients, setIngredients] = useState([]);
  const [steps, setSteps] = useState([]);
 
+ const uploadFile = async () => {
+  const formData = new FormData();
+  formData.append("file", selectedFile);
+  axios
+   .post("http://localhost:8100/upload", formData, {
+    headers: {
+     "Content-Type": "multipart/form-data",
+    },
+   })
+   .then((response) => {
+    return response.data;
+   })
+   .catch((error) => {
+    console.error(error);
+   });
+ };
+
  const handleSubmit = async (e) => {
   //   e.preventDefault();
+
+  const file = await uploadFile();
   const formData = {
    name: name,
    cuisine_id: +cuisine,
    cooking_time: cookingTime,
-   image:
-    "https://images.pexels.com/photos/842571/pexels-photo-842571.jpeg?auto=compress&cs=tinysrgb&w=300",
+   image: file,
    description: description,
    ingredients: ingredients,
    instructions: steps,
    user_id: localStorage.getItem("user_id"),
   };
   const res = await axios.post("http://localhost:8100/add_recipe", formData);
+  console.log(res);
  };
 
  return (
@@ -43,6 +66,8 @@ const AddRecipe = () => {
      setName={setName}
      setCuisine={setCuisine}
      setCookingTime={setCookingTime}
+     selectedFile={selectedFile}
+     setSelectedFile={setSelectedFile}
     />
     <AddDescription setDescription={setDescription} />
     <AddIngredient items={ingredients} setItems={setIngredients} />

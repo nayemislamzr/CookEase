@@ -6,7 +6,13 @@ import {
  RestaurantMenu,
 } from "@mui/icons-material";
 
-const AddPostHead = ({ setName, setCuisine, setCookingTime }) => {
+const AddPostHead = ({
+ setName,
+ setCuisine,
+ setCookingTime,
+ selectedFile,
+ setSelectedFile,
+}) => {
  const [cuisines, setCuisines] = useState([]);
  useEffect(() => {
   const apiUrl = "http://localhost:8100/get_cuisines";
@@ -21,11 +27,9 @@ const AddPostHead = ({ setName, setCuisine, setCookingTime }) => {
  }, []);
 
  const handleImageUpload = (event) => {
-  const selectedFile = event.target.files[0];
-
-  if (selectedFile) {
-   console.log("Selected File:", selectedFile);
-  }
+  const file = event.target.files[0];
+  // console.log(file);
+  setSelectedFile(file);
  };
 
  return (
@@ -81,7 +85,7 @@ const AddPostHead = ({ setName, setCuisine, setCookingTime }) => {
       onChange={handleImageUpload}
      />
      <CloudUpload className="mr-3" />
-     Add Image
+     {selectedFile ? selectedFile.name : "Add Image"}
     </label>
    </div>
   </div>
