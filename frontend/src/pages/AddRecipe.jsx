@@ -23,18 +23,16 @@ const AddRecipe = () => {
  const uploadFile = async () => {
   const formData = new FormData();
   formData.append("file", selectedFile);
-  axios
-   .post("http://localhost:8100/upload", formData, {
+  try {
+   const response = await axios.post("http://localhost:8100/upload", formData, {
     headers: {
      "Content-Type": "multipart/form-data",
     },
-   })
-   .then((response) => {
-    return response.data;
-   })
-   .catch((error) => {
-    console.error(error);
    });
+   return response;
+  } catch (err) {
+   console.error(err);
+  }
  };
 
  const handleSubmit = async (e) => {
@@ -45,14 +43,15 @@ const AddRecipe = () => {
    name: name,
    cuisine_id: +cuisine,
    cooking_time: cookingTime,
-   image: file,
+   image: file.data,
    description: description,
    ingredients: ingredients,
    instructions: steps,
    user_id: localStorage.getItem("user_id"),
   };
+//   console.log(formData);
   const res = await axios.post("http://localhost:8100/add_recipe", formData);
-  console.log(res);
+//   console.log(res);
  };
 
  return (

@@ -88,7 +88,7 @@ const PostCard = ({ post }) => {
    </div>
    <p className="text-gray-700 mb-2 line-clamp-3">{post.caption}</p>
    <img
-    src={post.imageUrl}
+    src={`http://localhost:8100/images/${post.imageUrl}`}
     alt="PostCard"
     className="w-full h-[600px] object-cover mb-2 rounded-lg w-full"
    />

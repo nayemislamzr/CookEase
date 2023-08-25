@@ -31,7 +31,7 @@ const RecipeCard = ({
       <Favorite />
      </div>
      <img
-      src={image}
+      src={`http://localhost:8100/images/${image}`}
       alt={title}
       className="recipe-image transform hover:scale-105 transition-transform duration-300"
      />

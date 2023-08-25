@@ -3,12 +3,16 @@ import mysql from "mysql";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
+import fs from "fs/promises";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const port = 8100;
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(express.static(path.join(__dirname, "uploads")));
 
 const db = mysql.createConnection({
  host: "localhost",
@@ -658,4 +662,18 @@ app.post("/upload", upload.single("file"), (req, res) => {
  }
  const filename = req.file.filename;
  return res.json(filename);
+});
+
+// Serve uploaded images
+app.get("/images/:filename", async (req, res) => {
+ const { filename } = req.params;
+ const filePath = path.join(__dirname, "uploads", filename);
+
+ try {
+  const fileContent = await fs.readFile(filePath);
+  res.setHeader("Content-Type", "image/jpeg"); // Modify according to your image type
+  res.send(fileContent);
+ } catch (error) {
+  res.status(404).send("Image not found");
+ }
 });

@@ -31,7 +31,7 @@ const PostHead = ({
       <RestaurantMenu />
       {cuisine}
      </div>
-     <img src={imageUrl} className="w-full h-full object-cover shadow-lg" />
+     <img src={`http://localhost:8100/images/${imageUrl}`} className="w-full h-full object-cover shadow-lg" />
      <div className="absolute bottom-0 left-0 w-full bg-gray-600 opacity-50">
       <div className="flex justify-between items-center px-4 py-2">
        <div className="flex items-center text-white">
