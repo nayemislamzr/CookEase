@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 
 // recipeId, imageUrl, caption, author, authorId, profilePic, time, reactionCount, commentCount
 const PostCard = ({ post }) => {
- const id = post.recipe_id;
  const [liked, setLiked] = useState(false);
  const [saved, setSaved] = useState(false);
 
@@ -22,7 +21,7 @@ const PostCard = ({ post }) => {
    const apiUrl = `http://localhost:8100/post_stat`;
    const formData = {
     user_id: localStorage.getItem("user_id"),
-    recipe_id: id,
+    recipe_id: post.recipeId,
    };
    const res = await axios.post(apiUrl, formData);
    setLiked(res.data.liked);
@@ -43,7 +42,7 @@ const PostCard = ({ post }) => {
  const addReaction = async (e) => {
   await axios.post("http://localhost:8100/add_post_reaction", {
    user_id: localStorage.getItem("user_id"),
-   recipe_id: id,
+   recipe_id: post.recipeId,
   });
   setLiked(true);
  };
@@ -51,7 +50,7 @@ const PostCard = ({ post }) => {
  const removeReaction = async (e) => {
   await axios.post("http://localhost:8100/rmv_post_reaction", {
    user_id: localStorage.getItem("user_id"),
-   recipe_id: id,
+   recipe_id: post.recipeId,
   });
   setLiked(false);
  };
@@ -59,7 +58,7 @@ const PostCard = ({ post }) => {
  const addBookmark = async (e) => {
   await axios.post("http://localhost:8100/save_post", {
    user_id: localStorage.getItem("user_id"),
-   recipe_id: id,
+   recipe_id: post.recipeId,
   });
   setSaved(true);
  };
@@ -67,7 +66,7 @@ const PostCard = ({ post }) => {
  const removeBookmark = async (e) => {
   await axios.post("http://localhost:8100/remove_saved_post", {
    user_id: localStorage.getItem("user_id"),
-   recipe_id: id,
+   recipe_id: post.recipeId,
   });
   setSaved(false);
  };
@@ -107,22 +106,22 @@ const PostCard = ({ post }) => {
      )}
      {liked && (
       <button className="flex items-center space-x-1" onClick={removeReaction}>
-       <FavoriteBorder />
+       <Favorite />
        <span>Unlike</span>
       </button>
      )}
     </div>
     <div className="mr-4 flex items-center">
-    {!saved && (
+     {!saved && (
       <button className="flex items-center space-x-1" onClick={addBookmark}>
        <BookmarkBorder />
-       <span>Like</span>
+       <span>Save</span>
       </button>
      )}
-     {liked && (
-      <button className="flex items-center space-x-1" onClick={removeReaction}>
-       <FavoriteBorder />
-       <span>Unlike</span>
+     {saved && (
+      <button className="flex items-center space-x-1" onClick={removeBookmark}>
+       <Bookmark />
+       <span>Unsave</span>
       </button>
      )}
     </div>

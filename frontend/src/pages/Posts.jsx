@@ -36,7 +36,6 @@ const Posts = () => {
      setPosts((posts) => [...posts, newPost]);
     });
 
-    console.log(posts);
    } catch (error) {
     console.error("Error fetching user data:", error);
    }
