@@ -373,6 +373,91 @@ app.post("/post_stat", async (req, res) => {
  }
 });
 
+app.post("/is_user_following", async (req, res) => {
+ const { p_follower, p_followed } = req.body;
+ const q =
+  "SELECT * FROM CookEase.follow where following_user_id = ? and followed_user_id = ?";
+ try {
+  const response = await queryDatabase(q, [p_follower, p_followed]);
+  const formData = {
+   following: response.length !== 0,
+  };
+  return res.json(formData);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
+// get user stats
+// posts, followers, following
+app.get("/user_stat/:id", async (req, res) => {
+ const user_id = req.params.id;
+ const q1 =
+  "SELECT count(recipe_id) as posts FROM CookEase.user_recipe where user_id=?"; // posts
+ const q2 =
+  "SELECT count(followed_user_id) as followers FROM CookEase.follow where followed_user_id = ?"; // followers
+ const q3 =
+  "SELECT count(following_user_id) as followings FROM CookEase.follow where following_user_id = ?"; // following
+
+ try {
+  const [postsData] = await queryDatabase(q1, [user_id]);
+  const [followersData] = await queryDatabase(q2, [user_id]);
+  const [followingsData] = await queryDatabase(q3, [user_id]);
+
+  const formData = {
+   posts: postsData.posts,
+   followers: followersData.followers,
+   followings: followingsData.followings,
+  };
+
+  //   console.log(formData);
+  return res.json(formData);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
+app.get("/user_recipe/:id", async (req, res) => {
+ const user_id = req.params.id;
+ const q = "SELECT * FROM CookEase.user_recipe where user_id = ?;";
+ try {
+  db.query(q, [user_id], (err, data) => {
+   if (err) throw err;
+   res.json(data);
+  });
+ } catch (err) {
+  console.error(err);
+  res.json(err);
+ }
+});
+
+app.post("/follow", (req, res) => {
+ const { following, followed } = req.body;
+ const q = "insert into CookEase.follow values(?,?)";
+ try {
+  db.query(q, [following, followed]);
+  return res.json("following...");
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
+app.post("/unfollow", (req, res) => {
+ const { following, followed } = req.body;
+ const q =
+  "delete from CookEase.follow where following_user_id = ? and followed_user_id = ?";
+ try {
+  db.query(q, [following, followed]);
+  return res.json("following...");
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
 // reaction on recipe
 app.post("/add_post_reaction", (req, res) => {
  const q =

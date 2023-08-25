@@ -10,6 +10,7 @@ import {
  PostAdd,
  Bookmarks,
  Login,
+ Logout,
 } from "@mui/icons-material";
 
 const Header = () => {
@@ -57,8 +58,20 @@ const Header = () => {
      <div className="flex space-x-4">
       {loggedIn && (
        <>
-        <CircleNotifications />
-        <AccountCircle />
+        <Link to={``}>
+         <CircleNotifications />
+        </Link>
+        <Link to={`/user/${localStorage.getItem("user_id")}`}>
+         <AccountCircle />
+        </Link>
+        <Link to="/login">
+         <button
+          onClick={() => {
+           localStorage.removeItem("user_id");
+          }}>
+          <Logout />
+         </button>
+        </Link>
        </>
       )}
       {!loggedIn && (
