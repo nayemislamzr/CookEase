@@ -346,6 +346,23 @@ app.get("/get_cuisines", (req, res) => {
  });
 });
 
+app.get("/get_user_from_recipe/:id", (req, res) => {
+ const recipeId = req.params.id;
+ const q = `SELECT su.user_id, su.first_name, su.last_name, su.profile_pic_url
+   FROM CookEase.site_user AS su
+   JOIN CookEase.user_recipe AS ur ON su.user_id = ur.user_id
+   WHERE ur.recipe_id = ?;`;
+ try {
+  db.query(q, [recipeId], (err, data) => {
+   if (err) throw err;
+   return res.status(200).json(data[0]);
+  });
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
 // get post stat of the user
 app.post("/post_stat", async (req, res) => {
  const { user_id, recipe_id } = req.body;
@@ -383,6 +400,21 @@ app.post("/is_user_following", async (req, res) => {
    following: response.length !== 0,
   };
   return res.json(formData);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
+app.post("/posts", (req, res) => {
+ const { user_id } = req.body;
+ const q =
+  "SELECT * from CookEase.recipe where recipe_id in (SELECT recipe_id FROM CookEase.user_recipe where user_id in (SELECT followed_user_id FROM CookEase.follow where following_user_id = ?)) order by post_time desc;";
+ try {
+  db.query(q, [user_id], (err, data) => {
+   if (err) throw err;
+   return res.status(200).json(data);
+  });
  } catch (err) {
   console.error("Error:", err);
   return res.status(500).json({ error: "An error occurred" });

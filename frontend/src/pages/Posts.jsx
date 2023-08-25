@@ -1,38 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PostCard from "../components/Posts/PostCard";
 import CookDay from "../components/Day/CookDay";
+import axios from "axios";
 
 const Posts = () => {
- const posts = [
-  {
-   id: "1",
-   imageUrl:
-    "https://scontent.fdac31-1.fna.fbcdn.net/v/t39.30808-6/367476967_677384967750380_3734878373982405749_n.jpg?stp=dst-jpg_p526x296&_nc_cat=1&ccb=1-7&_nc_sid=7f8c78&_nc_ohc=OLXS2126kSEAX9UTrCm&_nc_ht=scontent.fdac31-1.fna&oh=00_AfA9SpXtHZyhYX6DTyd_33mrGCPNyEWGq6hOiEzA1B_5UQ&oe=64E0CDC9",
-   caption: "India ends the West Indies tour with more wins.",
-   writer: "CricTracker",
-   time: "15/08/23",
-   reactionCount: 15000,
-   commentCount: 978,
-  },
- ];
+
+ const [posts, setPosts] = useState([]);
+ useEffect(() => {
+  const fetchData = async () => {
+   try {
+    const apiUrl = `http://localhost:8100/posts`;
+    const formData = { user_id: localStorage.getItem("user_id") };
+    const response = await axios.post(apiUrl, formData);
+
+    response.data.map(async ({ recipe_id, description, post_time }) => {
+     const recipe = await axios.get(
+      `http://localhost:8100/recipe/${recipe_id}`
+     );
+     const user = await axios.get(
+      `http://localhost:8100/get_user_from_recipe/${recipe_id}`
+     );
+
+     const newPost = {
+      recipeId: recipe_id,
+      imageUrl: recipe.data.imageUrl,
+      caption: description,
+      author: user.data.first_name + " " + user.data.last_name,
+      authorId: user.data.user_id,
+      profilePic: user.data.profile_pic_url,
+      time: post_time,
+      reactionCount: recipe.data.likeCount,
+      commentCount: recipe.data.commentCount,
+     };
+     setPosts((posts) => [...posts, newPost]);
+    });
+
+    console.log(posts);
+   } catch (error) {
+    console.error("Error fetching user data:", error);
+   }
+  };
+
+  fetchData();
+ }, []);
+
  return (
   <>
    <Header />
    <div className="flex justify-center items-center">
-    <div className="w-4/12 flex flex-col space-y-3">
+    <div className="w-5/12 flex flex-col space-y-3">
      <CookDay />
      {posts.map((post, index) => (
       <div>
-       <PostCard
-        id={post.id}
-        imageUrl={post.imageUrl}
-        caption={post.caption}
-        writer={post.writer}
-        time={post.time}
-        reactionCount={post.reactionCount}
-        commentCount={post.commentCount}
-       />
+       <PostCard post={post} />
       </div>
      ))}
     </div>
