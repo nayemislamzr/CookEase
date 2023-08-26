@@ -20,12 +20,13 @@ const UserProfileCard = ({ user }) => {
   <div class="w-full rounded-lg p-12 shadow-lg bg-white">
    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
     <div class="grid-cols-1 lg:col-span-3">
-     <div class="mx-auto flex h-[90px] w-[90px] items-center justify-center rounded-lg bg-pink-100 p-4">
-      {user.profile_pic_url && (
-       <img src={user.profile_pic_url} className="h-32 w-32 rounded-full" />
-      )}
-      {!user.profile_pic_url && <Avatar />}
-     </div>
+     {user.profile_pic_url && (
+      <img
+       src={user.profile_pic_url}
+       className="w-16 h-16 rounded-full mx-auto mb-3 border-2 border-pink-600"
+      />
+     )}
+     {!user.profile_pic_url && <Avatar className="mx-auto mb-3" />}
     </div>
 
     <div class="col-span-1 lg:col-span-9">

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CookSnapCard from "./CookDayCard";
 import axios from "axios";
 
-const CookDay = () => {
+const CookDay = ({ setModal }) => {
  const [snaps, setSnaps] = useState([]);
  useEffect(() => {
   const fetchSnaps = async () => {
@@ -14,7 +14,12 @@ const CookDay = () => {
  return (
   <div className="grid grid-cols-5 gap-2">
    {snaps.map((snap) => (
-    <CookSnapCard snap={snap} />
+    <button
+     onClick={() => {
+      setModal(snap);
+     }}>
+     <CookSnapCard snap={snap} />
+    </button>
    ))}
   </div>
  );

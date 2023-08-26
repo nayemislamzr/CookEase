@@ -608,6 +608,16 @@ app.post("/add_comment", (req, res) => {
  });
 });
 
+app.post("/add_cooksnap_comment", (req, res) => {
+ const { cooksnap_id, user_id, comment_text } = req.body;
+ const q =
+  "insert into CookEase.cooksnap_comment(cooksnap_id,user_id,comment_text) values (?,?,?)";
+ db.query(q, [cooksnap_id, user_id, comment_text], (err, data) => {
+  if (err) return res.json(err);
+  return res.json("comment added");
+ });
+});
+
 app.get("/comments_by_post/:id", (req, res) => {
  const recipeId = req.params.id;
  const q1 =
@@ -618,6 +628,57 @@ app.get("/comments_by_post/:id", (req, res) => {
  const result = [];
 
  db.query(q1, [recipeId], (err, comments) => {
+  if (err) {
+   return next(err);
+  }
+
+  // If there are no comments, return an empty array
+  if (comments.length === 0) {
+   return res.json(result);
+  }
+
+  let processedComments = 0;
+
+  comments.forEach((comment) => {
+   db.query(q2, [comment.user_id], (err, user) => {
+    if (err) {
+     return res.json(err);
+    }
+
+    const commentWithUser = {
+     user: {
+      user_id: comment.user_id,
+      first_name: user[0].first_name,
+      last_name: user[0].last_name,
+     },
+     comment: {
+      comment_text: comment.comment_text,
+      comment_time: comment.comment_time,
+     },
+    };
+
+    result.push(commentWithUser);
+
+    processedComments++;
+
+    if (processedComments === comments.length) {
+     return res.json(result);
+    }
+   });
+  });
+ });
+});
+
+app.get("/comments_by_cooksnap/:id", (req, res) => {
+ const cooksnapId = req.params.id;
+ const q1 =
+  "SELECT user_id, comment_text, comment_time FROM CookEase.cooksnap_comment WHERE cooksnap_id = ?";
+ const q2 =
+  "SELECT first_name, last_name FROM CookEase.site_user WHERE user_id = ?";
+
+ const result = [];
+
+ db.query(q1, [cooksnapId], (err, comments) => {
   if (err) {
    return next(err);
   }

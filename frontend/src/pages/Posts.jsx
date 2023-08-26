@@ -2,11 +2,21 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PostCard from "../components/Posts/PostCard";
 import CookDay from "../components/Day/CookDay";
+import CookDayModal from "../components/Day/CookDayModal";
+
 import axios from "axios";
 
 const Posts = () => {
-
  const [posts, setPosts] = useState([]);
+ const [modal, setModal] = useState(null);
+
+ const openModal = ({ snap }) => {
+  setModal(snap);
+ };
+
+ const closeModal = () => {
+  setModal(null);
+ };
  useEffect(() => {
   const fetchData = async () => {
    try {
@@ -35,7 +45,6 @@ const Posts = () => {
      };
      setPosts((posts) => [...posts, newPost]);
     });
-
    } catch (error) {
     console.error("Error fetching user data:", error);
    }
@@ -47,9 +56,16 @@ const Posts = () => {
  return (
   <>
    <Header />
+   {modal && (
+    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md">
+     <div className="relative">
+      <CookDayModal snap={modal} setModal={setModal} />
+     </div>
+    </div>
+   )}
    <div className="flex justify-center items-center">
     <div className="w-5/12 flex flex-col space-y-3">
-     <CookDay />
+     <CookDay setModal={setModal} />
      {posts.map((post, index) => (
       <div>
        <PostCard post={post} />
