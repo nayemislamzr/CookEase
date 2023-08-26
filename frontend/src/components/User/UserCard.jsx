@@ -6,8 +6,8 @@ import Follow from "./Follow";
 const UserCard = ({ user }) => {
  const [own, setOwn] = useState(false);
  useEffect(() => {
-  setOwn(localStorage.getItem("user_id") == user.user_id);
- }, []);
+  setOwn(localStorage.getItem("user_id") === user.user_id);
+ });
  return (
   <div className="bg-white p-4 rounded-lg shadow-md">
    {user.profile_pic_url && (

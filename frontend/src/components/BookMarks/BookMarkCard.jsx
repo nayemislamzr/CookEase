@@ -11,7 +11,7 @@ const BookMarkCard = ({ post }) => {
     <div className="lg:flex lg:flex-row space-x-5">
      <div className="w-2/12">
       <img
-       src={post.imageUrl}
+       src={`http://localhost:8100/images/${post.imageUrl}`}
        className="rounded-lg w-32 h-full"
        alt="Thumbnail"
       />

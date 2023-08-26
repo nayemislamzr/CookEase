@@ -348,6 +348,18 @@ app.post("/add_recipe", (req, res) => {
  });
 });
 
+// add cooksnap
+app.post("/add_cooksnap", (req, res) => {
+ const { recipe_id, user_id, cooksnap_url, caption } = req.body;
+ const q =
+  "insert into CookEase.cooksnap(recipe_id,user_id,cooksnap_url,caption) values(?,?,?,?)";
+ const values = [recipe_id, user_id, cooksnap_url, caption];
+ db.query(q, values, (err, data) => {
+  if (err) return res.json(err);
+  return res.json({ cooksnap_id: data.insertId });
+ });
+});
+
 // get all cuisines
 app.get("/get_cuisines", (req, res) => {
  const q = "SELECT * FROM CookEase.cuisine";

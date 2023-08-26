@@ -19,6 +19,7 @@ import Description from "../components/Posts/Description";
 import UserCard from "../components/User/UserCard";
 import CommentInput from "../components/Comment/CommentInput";
 import Instruction from "../components/Instruction/Instruction";
+import AddCookDay from "../components/Day/AddCookDay";
 
 const Recipe = (props) => {
  const { id } = useParams();
@@ -138,9 +139,26 @@ const Recipe = (props) => {
   setSaved(false);
  };
 
+ const [isModalOpen, setIsModalOpen] = useState(false);
+
+ const openModal = () => {
+  setIsModalOpen(true);
+ };
+
+ const closeModal = () => {
+  setIsModalOpen(false);
+ };
+
  return (
   <div>
    <Header />
+   {isModalOpen && (
+    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md">
+     <div className="relative">
+      <AddCookDay recipe_id={id} closeModal={closeModal} />
+     </div>
+    </div>
+   )}
    <div className="fixed bottom-1/2 right-12 flex flex-col items-center bg-white rounded-lg shadow-md ml-4 w-12 text-pink-600 space-y-5 p-2">
     {saved && (
      <button onClick={removeBookmark}>
@@ -162,8 +180,12 @@ const Recipe = (props) => {
       <Favorite />
      </button>
     )}
-    <ChatBubbleOutline />
-    <CameraAltOutlined />
+    <a href="#comments">
+     <ChatBubbleOutline />
+    </a>
+    <button onClick={openModal}>
+     <CameraAltOutlined />
+    </button>
     <Print />
    </div>
    <div className="flex flex-row justify-center space-x-3">

@@ -8,6 +8,7 @@ import AddRecipe from "./pages/AddRecipe";
 import Recipe from "./pages/Recipe";
 import User from "./pages/User";
 import BookMarks from "./pages/BookMarks";
+import AddCookDay from "./components/Day/AddCookDay";
 
 function App() {
  return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/bookmarks" element={<BookMarks />} />
       <Route path="/recipe/:id" element={<Recipe />} />
       <Route path="/user/:id" element={<User />} />
+      <Route path="/test" element={<AddCookDay />} />
      </Routes>
     </BrowserRouter>
    </div>

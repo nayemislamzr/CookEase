@@ -2,7 +2,7 @@ import React from "react";
 
 const CommentSection = ({ comments }) => {
  return (
-  <div className="w-full bg-white p-5 rounded-lg shadow-md">
+  <div className="w-full bg-white p-5 rounded-lg shadow-md" id="comments">
    <p className="text-xl mb-4 font-abril-fatface border-b-2 pb-2">Comments</p>
 
    <div className="space-y-4">
