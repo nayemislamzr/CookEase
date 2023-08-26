@@ -360,6 +360,20 @@ app.post("/add_cooksnap", (req, res) => {
  });
 });
 
+// get cooksnaps
+app.get("/get_cooksnaps", (req, res) => {
+ const q =
+  "SELECT * FROM CookEase.cooksnap order by cooksnap_time desc limit 5;";
+ db.query(q, (error, results) => {
+  if (error) {
+   console.error("Error retrieving snaps:", error);
+   res.status(500).json({ error: "Error retrieving snaps" });
+  } else {
+   res.status(200).json(results);
+  }
+ });
+});
+
 // get all cuisines
 app.get("/get_cuisines", (req, res) => {
  const q = "SELECT * FROM CookEase.cuisine";

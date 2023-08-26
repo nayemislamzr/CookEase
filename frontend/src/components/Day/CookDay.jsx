@@ -1,49 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CookSnapCard from "./CookDayCard";
+import axios from "axios";
 
 const CookDay = () => {
- const snaps = [
-  {
-   cooksnap_id: 1,
-   recipe_id: 100,
-   user_id: 20,
-   cooksnap_url:
-    "https://images.freeimages.com/images/large-previews/4ec/banana-s-1326714.jpg",
-   caption: "My CookDay",
-  },
-  {
-   cooksnap_id: 1,
-   recipe_id: 100,
-   user_id: 20,
-   cooksnap_url:
-    "https://images.freeimages.com/images/large-previews/d27/cooking-chicken-1520344.jpg",
-   caption: "My CookDay",
-  },
-  {
-   cooksnap_id: 1,
-   recipe_id: 100,
-   user_id: 20,
-   cooksnap_url:
-    "https://images.freeimages.com/images/large-previews/d36/cooking-a-chiken-1323662.jpg",
-   caption: "My CookDay",
-  },
-  {
-   cooksnap_id: 1,
-   recipe_id: 100,
-   user_id: 20,
-   cooksnap_url:
-    "https://images.freeimages.com/images/large-previews/215/mount-cook-national-park-1378279.jpg",
-   caption: "My CookDay",
-  },
-  {
-   cooksnap_id: 1,
-   recipe_id: 100,
-   user_id: 20,
-   cooksnap_url:
-    "https://images.freeimages.com/images/large-previews/4ec/banana-s-1326714.jpg",
-   caption: "My CookDay",
-  },
- ];
+ const [snaps, setSnaps] = useState([]);
+ useEffect(() => {
+  const fetchSnaps = async () => {
+   const res = await axios.get("http://localhost:8100/get_cooksnaps");
+   setSnaps(res.data);
+  };
+  fetchSnaps();
+ });
  return (
   <div className="grid grid-cols-5 gap-2">
    {snaps.map((snap) => (
