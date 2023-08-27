@@ -25,7 +25,6 @@ function App() {
       <Route path="/bookmarks" element={<BookMarks />} />
       <Route path="/recipe/:id" element={<Recipe />} />
       <Route path="/user/:id" element={<User />} />
-      <Route path="/test" element={<AddCookDay />} />
      </Routes>
     </BrowserRouter>
    </div>

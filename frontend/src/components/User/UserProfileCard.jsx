@@ -23,7 +23,7 @@ const UserProfileCard = ({ user }) => {
      {user.profile_pic_url && (
       <img
        src={user.profile_pic_url}
-       className="w-16 h-16 rounded-full mx-auto mb-3 border-2 border-pink-600"
+       className="w-30 h-30 rounded-full mx-auto mb-3 border-2 border-pink-600"
       />
      )}
      {!user.profile_pic_url && <Avatar className="mx-auto mb-3" />}
