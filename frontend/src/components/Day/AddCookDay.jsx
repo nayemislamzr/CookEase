@@ -42,7 +42,8 @@ function AddCookDay({ recipe_id, closeModal }) {
   };
   try {
    const res = await axios.post("http://localhost:8100/add_cooksnap", formData);
-   console.log(res.data);
+   closeModal();
+   //    console.log(res.data);
   } catch (err) {
    console.error(err);
   }

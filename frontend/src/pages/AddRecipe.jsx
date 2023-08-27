@@ -49,9 +49,11 @@ const AddRecipe = () => {
    instructions: steps,
    user_id: localStorage.getItem("user_id"),
   };
-//   console.log(formData);
+  //   console.log(formData);
   const res = await axios.post("http://localhost:8100/add_recipe", formData);
-//   console.log(res);
+  if (res.status == 200) {
+   navigate(`/recipe/${res.data.recipe_id}`);
+  }
  };
 
  return (

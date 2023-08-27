@@ -31,16 +31,16 @@ const CookDayModal = ({ snap, setModal }) => {
  const [comments, setComments] = useState([]);
  const [comment, setComment] = useState("");
 
+ const fetchComments = async () => {
+  try {
+   const apiUrl = `http://localhost:8100/comments_by_cooksnap/${snap.cooksnap_id}`;
+   const response = await axios.get(apiUrl);
+   setComments(response.data);
+  } catch (error) {
+   console.error("Error fetching recipe data:", error);
+  }
+ };
  useEffect(() => {
-  const fetchComments = async () => {
-   try {
-    const apiUrl = `http://localhost:8100/comments_by_cooksnap/${snap.cooksnap_id}`;
-    const response = await axios.get(apiUrl);
-    setComments(response.data);
-   } catch (error) {
-    console.error("Error fetching recipe data:", error);
-   }
-  };
   const fetchUser = async () => {
    const res = await axios.get(`http://localhost:8100/users/${snap.user_id}`);
    setUser(res.data[0]);
@@ -48,7 +48,7 @@ const CookDayModal = ({ snap, setModal }) => {
 
   fetchComments();
   fetchUser();
- }, [snap.cooksnap_id]);
+ }, []);
 
  const handleCommentChange = (event) => {
   setComment(event.target.value);
@@ -63,6 +63,7 @@ const CookDayModal = ({ snap, setModal }) => {
    };
    await axios.post("http://localhost:8100/add_cooksnap_comment", formData);
    setComment("");
+   await fetchComments();
   }
  };
 
@@ -70,35 +71,33 @@ const CookDayModal = ({ snap, setModal }) => {
   <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md">
    <div className="fixed inset-0 bg-black opacity-40"></div>
    <div className="flex flex-row rounded-3xl shadow-lg w-3/4 h-3/4 relative space-x-4">
-    <div className="relative flex-none">
+    <div className="w-1/2 relative flex-none">
      <img
       src={`http://localhost:8100/${snap.cooksnap_url}`}
       alt="Cook Snap"
-      className="w-full h-full rounded-3xl object-cover"
+      className="h-full rounded-3xl object-cover"
      />
      <div className="flex flex-col space-y-3 absolute right-5 bottom-5">
       <Link to={`/recipe/${snap.recipe_id}`}>
-       <button className="h-10 w-10 p-2 rounded-full bg-gray-700 bg-opacity-30 text-white">
+       <button className="h-10 w-10 p-2 rounded-full bg-gray-800 bg-opacity-40 text-white">
         <RestaurantMenu />
        </button>
       </Link>
-      <button className="h-10 w-10 p-2 rounded-full bg-gray-700 bg-opacity-30 text-white">
+      <button className="h-10 w-10 p-2 rounded-full bg-gray-800 bg-opacity-40 text-white">
        <FavoriteBorder />
       </button>
      </div>
-     <div className="absolute left-5 bottom-5">
-      <p className="p-1 bg-gray-700 bg-opacity-30 text-white line-clamp-1">
-       {snap.caption}
-      </p>
+     <div className="absolute left-1/2 transform -translate-x-1/2 bottom-5">
+      <p className="p-1 bg-gray-800 bg-opacity-70 text-white">{snap.caption}</p>
      </div>
      <div className="absolute left-5 top-5">
       <div className="flex flex-row space-x-3">
        <img
         src={user.profile_pic_url}
-        className="h-12 w-12 rounded-full border border-2 border-pink-600"
+        className="h-14 w-14 rounded-full border border-2 border-pink-600"
        />
-       <div>
-        <p>
+       <div className="flex flex-col space-y-1">
+        <p className="p-1 bg-gray-800 bg-opacity-30">
          {user.first_name} {user.last_name}
         </p>
         <p>@{user.user_id}</p>
@@ -133,6 +132,7 @@ const CookDayModal = ({ snap, setModal }) => {
        <input
         type="text"
         placeholder="Add a comment..."
+        value={comment}
         className="w-full border rounded-full py-2 px-4 pr-12 focus:outline-none"
         onChange={handleCommentChange}
        />
