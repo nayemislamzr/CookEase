@@ -3,11 +3,12 @@ import { useState } from "react";
 import {
  Card,
  CardContent,
- Typography,
  List,
  ListItem,
  ListItemText,
  ListItemIcon,
+ TextField,
+ Button,
 } from "@mui/material";
 import EventIcon from "@mui/icons-material/Event";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -28,7 +29,7 @@ const events = [
  },
 ];
 
-const addEventCard = ({ onSave }) => {
+const AddEventCard = ({ onSave }) => {
  const [name, setName] = useState("");
  const [dateTime, setDateTime] = useState(new Date());
  const [location, setLocation] = useState("");
