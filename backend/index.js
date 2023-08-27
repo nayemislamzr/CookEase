@@ -389,6 +389,108 @@ app.get("/get_cuisines", (req, res) => {
  });
 });
 
+app.get("/get_events", (req, res) => {
+ const q1 = "SELECT * FROM CookEase.contest";
+ const q2 =
+  "SELECT contest_id, COUNT(*) AS participants FROM CookEase.user_contest WHERE contest_id = ?";
+
+ db.query(q1, (error, contestResults) => {
+  if (error) {
+   console.error("Error retrieving contests:", error);
+   res.status(500).json({ error: "Error retrieving contests" });
+  } else {
+   const contestsWithParticipants = [];
+
+   const fetchParticipants = (contestIndex) => {
+    if (contestIndex < contestResults.length) {
+     const contest = contestResults[contestIndex];
+     const contestId = contest.contest_id;
+
+     db.query(q2, [contestId], (participantError, participantResults) => {
+      if (participantError) {
+       console.error(
+        `Error retrieving participants for contest ${contestId}:`,
+        participantError
+       );
+      } else {
+       contest.participants = participantResults[0].participants;
+      }
+      fetchParticipants(contestIndex + 1);
+     });
+    } else {
+     res.status(200).json(contestResults);
+    }
+   };
+   fetchParticipants(0);
+  }
+ });
+});
+
+app.post("/add_event", (req, res) => {
+ const { contest_name, contest_time, contest_venue } = req.body;
+ const { user_id } = req.body;
+ const q =
+  "insert into CookEase.contest (contest_name,contest_time,contest_venue) values (?,?,?)";
+ db.query(q, [contest_name, contest_time, contest_venue], (error, results) => {
+  if (error) {
+   console.error("Error retrieving cuisines:", error);
+   // Handle the error here, e.g., send an error response
+   res.status(500).json({ error: "Error retrieving cuisines" });
+  } else {
+   const contestId = results.insertId;
+   const q = "insert into CookEase.user_contest values (?,?)";
+   db.query(q, [user_id, contestId], (err, data) => {
+    if (err) {
+     console.error(err);
+     return res.status(500).json(err);
+    }
+    return res.status(200).json("contest added");
+   });
+  }
+ });
+});
+
+app.post("/has_user_participated", async (req, res) => {
+ const { user_id, contest_id } = req.body;
+ const q =
+  "SELECT * FROM CookEase.user_contest where user_id = ? and contest_id = ?";
+ try {
+  const response = await queryDatabase(q, [user_id, contest_id]);
+  const formData = {
+   participated: response.length !== 0,
+  };
+  return res.json(formData);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
+app.post("/participate", (req, res) => {
+ const { user_id, contest_id } = req.body;
+ const q = "insert into CookEase.user_contest values(?,?)";
+ try {
+  db.query(q, [user_id, contest_id]);
+  return res.json(`${user_id} participated ${contest_id}`);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
+app.post("/departicipate", (req, res) => {
+ const { user_id, contest_id } = req.body;
+ const q =
+  "delete from CookEase.user_contest where user_id = ? and contest_id = ?";
+ try {
+  db.query(q, [user_id, contest_id]);
+  return res.json(`${user_id} departicipated ${contest_id}`);
+ } catch (err) {
+  console.error("Error:", err);
+  return res.status(500).json({ error: "An error occurred" });
+ }
+});
+
 app.get("/get_user_from_recipe/:id", (req, res) => {
  const recipeId = req.params.id;
  const q = `SELECT su.user_id, su.first_name, su.last_name, su.profile_pic_url
