@@ -17,7 +17,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import Header from "../components/Header";
 import DateTimePicker from "../components/Contest/DateTimePicker";
 
-import { Add } from "@mui/icons-material";
+import { Add, Close } from "@mui/icons-material";
 
 // Sample event data
 const events = [
@@ -44,7 +44,10 @@ const AddEventCard = ({ onSave }) => {
  };
 
  return (
-  <Card className="m-2 max-w-sm">
+  <div className="pt-5 bg-white rounded-lg shadow-lg">
+   <button className="p-2 rounded-full bg-gray-200 h-8 w-8 text-md text-gray-500 flex items-center justify-center">
+    <Close />
+   </button>
    <CardContent>
     <List>
      <ListItem>
@@ -75,19 +78,6 @@ const AddEventCard = ({ onSave }) => {
      </ListItem>
      <ListItem>
       <ListItemIcon>
-       <GroupIcon fontSize="small" />
-      </ListItemIcon>
-      <ListItemText>
-       <TextField
-        label="Participants"
-        value={participants}
-        onChange={(e) => setParticipants(e.target.value)}
-        fullWidth
-       />
-      </ListItemText>
-     </ListItem>
-     <ListItem>
-      <ListItemIcon>
        <AccessTimeIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>
@@ -98,11 +88,13 @@ const AddEventCard = ({ onSave }) => {
       </ListItemText>
      </ListItem>
     </List>
-    <Button variant="contained" color="primary" onClick={handleSave}>
-     Save
-    </Button>
+    <button
+     className="ml-5 bg-pink-600 p-3 text-white rounded-lg shadow-full"
+     onClick={handleSave}>
+     Add Event
+    </button>
    </CardContent>
-  </Card>
+  </div>
  );
 };
 
@@ -153,6 +145,7 @@ function Contests() {
    <div className="bg-gray-100 min-h-screen py-8">
     <div className="container mx-auto">
      <div className="flex flex-wrap justify-center">
+      <AddEventCard />
       {events.map((event) => (
        <EventCard key={event.id} event={event} />
       ))}
